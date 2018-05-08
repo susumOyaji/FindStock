@@ -1,8 +1,10 @@
-using System;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
-[assembly: XamlCompilation (XamlCompilationOptions.Compile)]
+using Xamarin.Forms;
+
 namespace FindStock
 {
 	public partial class App : Application
@@ -11,8 +13,12 @@ namespace FindStock
 		{
 			InitializeComponent();
 
-			MainPage = new MainPage();
-		}
+			//MainPage = new FindStock.ListViewPage();
+            MainPage = new MainView();
+            //MainPage = new RadioImageSamplePage();
+            //MainPage = new GridSamplePage();
+
+        }
 
 		protected override void OnStart ()
 		{

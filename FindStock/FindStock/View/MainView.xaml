@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:FindStock;assembly=FindStock"
+             xmlns:vm="FindStock.MainView"
+             x:Class="FindStock.MainView"
+             x:Name="page">
+
+    <ContentPage.Padding>
+        <OnPlatform x:TypeArguments="Thickness">
+            <On Platform="iOS" Value="0, 20, 0, 0" />
+            <On Platform="Android, UWP, WinRT, WinPhone" Value="0, 0, 0, 0" />
+        </OnPlatform>
+    </ContentPage.Padding>
+
+
+
+    <ContentPage.BindingContext>
+        <vm:ListViewPageViewModel View="{x:Reference page}"/>
+    </ContentPage.BindingContext>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:NullToDefaultConverter x:Key="NullToDef" />
+            <local:IndexToImageConverter x:Key="imgConv" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+  
+    
+    
+
+
+
+    <!-- 全体 -->
+    <StackLayout Spacing="0"  BackgroundColor="Blue" HorizontalOptions="FillAndExpand">
+        <!-- Nikkei & Dow -->
+        <StackLayout Orientation="Horizontal"  HorizontalOptions="FillAndExpand" Spacing="5" VerticalOptions="Center">
+            <!-- Nikkei -->
+            <StackLayout  Orientation="Vertical" BackgroundColor="#341fff" HorizontalOptions="FillAndExpand" >
+                <Grid HorizontalOptions="Center" RowSpacing="0">
+                    <!-- 行の定義 -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <!-- 列の定義 -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="15*"/>
+                        <ColumnDefinition Width="45*"/>
+                        <ColumnDefinition Width="40*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Ni255列全体 -->
+                    <Image Source="{local:ImageResource Images.japan.png}" Margin="0,-2,0,0"  HeightRequest="40" WidthRequest="30" HorizontalOptions="Start" VerticalOptions="Start"
+                           Grid.Row="0"
+                            Grid.Column="0" />
+
+                    <Label x:Name="Nikkei255"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Grid.ColumnSpan="2"   
+                        Text = "Nikkei255"
+                        TextColor = "Yellow"
+                        HorizontalTextAlignment = "Start"
+                        VerticalTextAlignment = "Center"
+                        FontSize = "15"/>
+                    <Label x:Name="Ni255Goingprice"
+                        Grid.Row="1"
+                        Grid.Column="1"    
+                        Text = "{Binding Ni255Realprice, StringFormat='{0:#.##}'}"
+                        TextColor = "White"
+                        HorizontalTextAlignment = "Start"
+                        VerticalTextAlignment = "Center"/>
+                    <Button x:Name="Ni255Button"
+                        Grid.Row="1"
+                        Grid.Column="2"  
+                        Text = "{Binding Ni255Prev_day}"
+                        TextColor = "Black"
+                        BackgroundColor="{Binding Ni255Polar ,Converter={StaticResource NullToDef}}"    
+                        CommandParameter="{Binding Ni255FirstLastName}"
+                        HeightRequest="40">
+                        <Button.FontSize>
+                            <OnPlatform x:TypeArguments="x:Double" iOS="15" Android="13" />
+                        </Button.FontSize>
+                        <Button.Triggers>
+                            <EventTrigger Event="Clicked">
+                                <local:ButtonClickedTriggerAction/>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Grid>
+            </StackLayout>
+
+
+
+            <!-- NewYork列全体 -->
+            <StackLayout Orientation="Vertical" BackgroundColor="#341fff"  HorizontalOptions="FillAndExpand">
+                <Grid HorizontalOptions="Center" VerticalOptions="Center" RowSpacing="0">
+                    <!-- 行の定義 -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <!-- 列の定義 -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="15*"/>
+                        <ColumnDefinition Width="45*"/>
+                        <ColumnDefinition Width="40*"/>
+                    </Grid.ColumnDefinitions>
+
+
+                    <Image Source="{local:ImageResource Images.usa.png}" Margin="0,-2,0,0"  HeightRequest="40" WidthRequest="30" HorizontalOptions="Start" VerticalOptions="Start"
+                        Grid.Row="0"
+                        Grid.Column="0"/>
+                    <Label x:Name="City"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                         Grid.ColumnSpan="2"   
+                        Text = "$Indn"
+                        TextColor = "Yellow"
+                        HorizontalTextAlignment = "Start"
+                        VerticalTextAlignment = "Center"
+                        FontSize = "15"/>
+                    <Label x:Name="Goingprice"
+                        Grid.Row="1"
+                        Grid.Column="1"     
+                        Text = "{Binding Realprice, StringFormat='{0:#.##}'}"
+                        TextColor = "White"
+                        HorizontalTextAlignment = "End"
+                        VerticalTextAlignment = "Center"/>
+                    <Button x:Name="IndnButton"
+                        Grid.Row="1"
+                        Grid.Column="2"        
+                        Text = "{Binding Prev_day}"
+                        TextColor = "Black"
+                        BackgroundColor="{Binding Polar ,Converter={StaticResource NullToDef}}"
+                        CommandParameter="{Binding FirstLastName}"
+                        HeightRequest="40">
+                        <Button.FontSize>
+                            <OnPlatform x:TypeArguments="x:Double" iOS="15" Android="13" />
+                        </Button.FontSize>
+                        <Button.Triggers>
+                            <EventTrigger Event="Clicked">
+                                <local:ButtonClickedTriggerAction/>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Grid>
+            </StackLayout>
+        </StackLayout>
+
+
+
+
+      <!-- Ranking List View Tenplet  -->
+  
+            <!-- DataTemplateの中身はView派生クラス -->
+
+         <ContentPage.Resources>
+           <ResourceDictionary>
+
+                <DataTemplate x:Key="personTemplate">
+                    <StackLayout>
+                        <BoxView HorizontalOptions="FillAndExpand"
+                                 VerticalOptions="FillAndExpand"
+                                 Color="Red" />
+                        <Label HorizontalOptions="Center"
+                               Text="Binding Text}" />
+                    </StackLayout>
+                </DataTemplate>
+          
+           </ResourceDictionary> 
+          </ContentPage.Resources>
+
+     <StackLayout ItemTemplate="{StaticResource personTemplate}" HorizontalOptions="Center" VerticalOptions="Center"
+                  HeightRequest="150" WidthRequest="150" >     
+        <StackLayout.ItemsSource>
+               
+        </StackLayout.ItemsSource>
+     </StackLayout>
+
+        
+   <!--     
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="personTemplate">
+                 <ViewCell>
+                    <Grid>
+                        ...
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+        
+    <StackLayout Margin="20">
+        ...
+        <ListView ItemTemplate="{StaticResource personTemplate}" Margin="0,20,0,0">
+            <ListView.ItemsSource>
+                <x:Array Type="{x:Type local:Person}">
+                    <local:Person Name="Steve" Age="21" Location="USA" />
+                    ...
+                </x:Array>
+            </ListView.ItemsSource>
+        </ListView>
+    </StackLayout>
+
+    -->
+
+
+
+
+
+
+        
+  
+
+
+
+
+
+
+            
+        
+        <!-- Ranking Page -->
+        <StackLayout>
+            <StackLayout.Resources>
+                <ResourceDictionary>
+                    <StackLayout x:Key="Sell" Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                        <Image x:Name="image1" Grid.Row="0" Grid.Column="0" Source="{Binding SelectedIndex, Converter={StaticResource imgConv}, ConverterParameter=1}" />
+                        <Frame HeightRequest="120" WidthRequest="350" Margin="0,0,0,0" Padding="15" OutlineColor="#f00" HasShadow="true" BackgroundColor="Black">
+                            <Grid HorizontalOptions="FillAndExpand" RowSpacing="20">
+                            <!-- 行の定義 -->
+                                <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <!-- 列の定義 -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Label  Grid.Row="0" Grid.Column="0" Text="Label1" WidthRequest="100" BackgroundColor="White"/>
+                            <Label  Grid.Row="0" Grid.Column="1" Text="Label2" WidthRequest="100" BackgroundColor="White"/>
+                            <Label  Grid.Row="0" Grid.Column="2" Text="Label3" WidthRequest="100" BackgroundColor="White"/>
+                            <Label  Grid.Row="1" Grid.Column="0" Text="Label4" BackgroundColor="White"/>
+                            <Label  Grid.Row="1" Grid.Column="1" Text="Label5" BackgroundColor="White"/>
+                            <Label  Grid.Row="1" Grid.Column="2" Text="Label6" BackgroundColor="White"/>
+                            </Grid>
+                        </Frame>
+                    </StackLayout >
+                   </ResourceDictionary>
+                </StackLayout.Resources>
+               
+            
+             </StackLayout>
+
+
+        
+        <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+            <Image x:Name="image2" Grid.Row="0" Grid.Column="0" Source="{Binding SelectedIndex, Converter={StaticResource imgConv}, ConverterParameter=2}" />
+            <Frame HeightRequest="20" WidthRequest="350" Margin="0,0,-10,0" Padding="15" BackgroundColor="#000FB2">
+                <Grid HorizontalOptions="FillAndExpand" RowSpacing="0">
+                    <!-- 行の定義 -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <!-- 列の定義 -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                    </Grid.ColumnDefinitions>
+                  
+
+                    <Label  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Margin="0,-10,0,0" Text="Label1" BackgroundColor="Red"/>
+                    <Label  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8" Margin="0,0,0,-10" Text="Label2" BackgroundColor="Black"/>
+                    <Button Grid.Row="0" Grid.Column="8" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="0,-10,0,-10" Text="順位" BackgroundColor="Red"/>
+                </Grid>
+            </Frame>
+        </StackLayout >
+
+        <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+            <Image x:Name="image3" Grid.Row="0" Grid.Column="0" Source="{Binding SelectedIndex, Converter={StaticResource imgConv}, ConverterParameter=3}" />
+            <Frame HeightRequest="20" WidthRequest="350" Margin="0,0,-10,0" Padding="15" BackgroundColor="#000FB2">
+                <Grid HorizontalOptions="FillAndExpand" RowSpacing="0">
+                    <!-- 行の定義 -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <!-- 列の定義 -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                        <ColumnDefinition Width="10*"/>
+                    </Grid.ColumnDefinitions>
+                   
+
+                    <Label  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Margin="0,-10,0,0" Text="Label1" BackgroundColor="Red"/>
+                    <Label  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8" Margin="0,0,0,-10" Text="Label2" BackgroundColor="Black"/>
+                    <Button Grid.Row="0" Grid.Column="8" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="0,-10,0,-10" Text="順位" BackgroundColor="Red"/>
+                </Grid>
+            </Frame>
+        </StackLayout >
+
+
+        <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" BackgroundColor="#18FFFD">
+            <Image x:Name="image4" Margin="0" Source="{Binding SelectedIndex, Converter={StaticResource imgConv}, ConverterParameter=4}" />
+
+            <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                <Frame HeightRequest="20" WidthRequest="350" Margin="0,0,-10,0" Padding="15" BackgroundColor="#000FB2">
+                    <Grid HorizontalOptions="FillAndExpand" RowSpacing="0">
+                        <!-- 行の定義 -->
+                        <Grid.RowDefinitions >
+                            <RowDefinition Height="20*"/>
+                            <RowDefinition Height="80*"/>
+                        </Grid.RowDefinitions>
+                        <!-- 列の定義 -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="10*"/>
+                        </Grid.ColumnDefinitions>
+
+
+
+                        <Label  Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" Margin="0,-10,0,0" Text="Label1" BackgroundColor="Red"/>
+                        <Label  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8" Margin="0,0,0,-10" Text="Label2" BackgroundColor="Black"/>
+                        <Button Grid.Row="0" Grid.Column="8" Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="0,-10,0,-10" Text="順位" BackgroundColor="Red"/>
+                    </Grid>
+                </Frame>
+            </StackLayout >
+        </StackLayout>
+        <StackLayout Orientation="Vertical" Margin="0, 20, 0, 0" BackgroundColor="White">
+            <Image x:Name="image5" Source="{Binding SelectedIndex, Converter={StaticResource imgConv}, ConverterParameter=5}" />
+        </StackLayout>
+
+
+
+
+    </StackLayout>
+</ContentPage>
